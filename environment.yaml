@@ -8,6 +8,7 @@ channels:
 dependencies:
   - python==3.10
   - pip
+  - ihm
   - gxx_linux-64>=9,<=12
   - ninja
   - pytorch
