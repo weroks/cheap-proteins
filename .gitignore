@@ -17,3 +17,5 @@ outputs/*
 cached_tensors/*
 artifacts/*
 
+notebooks/cache
+

@@ -1,0 +1,15 @@
+name: cheap
+channels:
+  - pytorch
+  - conda-forge
+  - bioconda
+  - salilab
+dependencies:
+  - python==3.10
+  - pip
+  - ninja
+  - pytorch
+  - torchvision
+  - bioconda::tmalign
+  - pip:
+    - -r requirements.txt
