@@ -1,57 +1,36 @@
-# Use an official base image with Python and CUDA
-FROM nvidia/cuda:12.1.1-devel-ubuntu20.04 as base
+FROM --platform=linux/amd64 python:3.12-slim AS linux-base
 
-# Set environment variables
-ENV DEBIAN_FRONTEND=noninteractive
-ENV PATH="/opt/conda/bin:$PATH"
+# Utilities
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y --no-install-recommends build-essential \
+    sudo curl git htop less rsync screen vim nano wget ca-certificates \
+    openssh-client zsh clang graphviz
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    git \
-    build-essential \
-    libgl1 \
-    cmake \
-    && rm -rf /var/lib/apt/lists/*
+# Slurm
+RUN COMMANDS="sacct sacctmgr salloc sattach sbatch sbcast scancel scontrol sdiag sgather sinfo smap sprio squeue sreport srun sshare sstat strigger sview" \
+    && for CMD in $COMMANDS; do echo '#!/bin/bash' > "/usr/local/bin/$CMD" \
+    && echo 'ssh $USER@$SLURM_CLUSTER_NAME -t "cd $PWD; . ~/.zshrc 2>/dev/null || . ~/.bashrc 2>/dev/null; bash -lc '\'$CMD \$@\''"' >> "/usr/local/bin/$CMD" \
+    && chmod +x "/usr/local/bin/$CMD"; done
 
-# Install Miniconda
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /miniconda.sh && \
-    bash /miniconda.sh -b -p /opt/conda && \
-    rm /miniconda.sh && \
-    /opt/conda/bin/conda clean -afy
+FROM linux-base AS python-base
 
-# Copy environment files into the container
-COPY environment.yaml /tmp/environment.yaml
-COPY requirements.txt /tmp/requirements.txt
+# Workdir
+WORKDIR /app
 
-# Create conda environment
-RUN conda env create -f /tmp/environment.yaml && \
-    conda clean -afy
+# Environment variables
+ENV UV_PROJECT_ENVIRONMENT="/venv"
+ENV UV_PYTHON_INSTALL_DIR="/python"
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+ENV UV_PYTHON=python3.12
+ENV PATH="$UV_PROJECT_ENVIRONMENT/bin:$PATH"
+ENV PYTHONPATH="/app:$PYTHONPATH"
 
-# Activate conda environment and install pip dependencies
-RUN /bin/bash -c "source activate cheap && pip install -r /tmp/requirements.txt"
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:0.6.6 /uv /usr/local/bin/uv
 
-# Stage 2: Final image
-FROM nvidia/cuda:12.1.1-runtime-ubuntu20.04
-
-# Set environment variables
-ENV PATH="/opt/conda/bin:$PATH"
-ENV CONDA_PREFIX="/opt/conda"
-ENV CHEAP_CACHE="/cache"
-
-# Copy conda environment from the base stage
-COPY --from=base /opt/conda /opt/conda
-
-# Set the working directory
-WORKDIR /workspace
-
-# Clone the repository
-RUN git clone https://github.com/weroks/cheap-proteins.git /workspace
-
-# Clean up unnecessary files to reduce image size
-RUN rm -rf /opt/conda/pkgs/* && \
-    conda clean -a -y && \
-    rm -rf /var/lib/apt/lists/*
-
-# Set the default command to bash
-CMD ["/bin/bash"]
+# Environment
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project
