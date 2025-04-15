@@ -40,6 +40,7 @@ COPY . /app
 
 # Build and install OpenFold
 RUN /bin/bash -c "source activate cheap && \
+    # pip install git+https://github.com/amyxlu/openfold.git && \
     pip install -e ."
 
 # Default command
