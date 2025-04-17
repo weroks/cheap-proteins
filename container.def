@@ -1,0 +1,20 @@
+Bootstrap: docker
+From: continuumio/miniconda3
+
+%files
+    $PWD /app  # Copy the current working directory to /app in the container, excluding .git
+    $PWD/environment.yaml environment.yaml
+    $PWD/requirements.txt requirements.txt
+
+%post
+    apt-get update && apt-get install -y build-essential ninja-build libgl1
+    chmod 1777 /tmp
+    conda update -n base -c defaults conda -y
+    conda env create -f environment.yaml
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> $SINGULARITY_ENVIRONMENT
+    echo "conda activate cheap" >> $SINGULARITY_ENVIRONMENT
+    . /opt/conda/etc/profile.d/conda.sh
+    conda activate cheap
+    pip install --no-deps git+https://github.com/amyxlu/openfold.git
+    cd /app
+    pip install -e .

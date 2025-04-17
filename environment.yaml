@@ -1,15 +1,14 @@
-name: cheap 
+name: cheap
 channels:
   - pytorch
-  - nvidia
   - conda-forge
+  - nvidia
   - bioconda
   - salilab
 dependencies:
   - python==3.10
   - pip
   - ihm
-  - gxx_linux-64>=9,<=12
   - ninja
   - pytorch
   - pytorch-cuda=12.1

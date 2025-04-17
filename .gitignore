@@ -18,4 +18,5 @@ cached_tensors/*
 artifacts/*
 
 notebooks/cache
+cache/
 
