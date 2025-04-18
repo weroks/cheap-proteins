@@ -1,8 +1,10 @@
+import importlib
 import os
 from pathlib import Path
-import importlib
+
 import torch
 from torch.utils.data import DataLoader, Dataset
+from tqdm import tqdm
 
 os.environ["CHEAP_CACHE"] = "cache"
 
@@ -130,9 +132,8 @@ def run(args):
     embeddings = []
     masks = []
 
-    for batch in dataloader:
+    for batch in tqdm(dataloader):
         emb, mask = pipeline(batch)
-        # Move embeddings and masks to CPU immediately
         embeddings.append(emb.cpu())
         masks.append(mask.cpu())
 
