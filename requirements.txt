@@ -25,6 +25,7 @@ plotly   # to log wandb plots
 jupyter
 ninja
 biotite
+datasets
 # git+https://github.com/amyxlu/openfold.git --install-option="--no-deps"
 
 # ipython related

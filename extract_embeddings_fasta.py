@@ -3,8 +3,10 @@ import os
 from pathlib import Path
 
 import torch
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 from tqdm import tqdm
+
+from cheap.datasets.custom import FastaDataset
 
 os.environ["CHEAP_CACHE"] = "cache"
 
@@ -43,48 +45,6 @@ def parse_args():
     return parser.parse_args()
 
 
-def load_fasta(filepath: str) -> list[str]:
-    """Reads a FASTA file and returns a list of protein sequences.
-
-    Args:
-        filepath (str): Path to the FASTA file.
-
-    Returns:
-        list: A list of protein sequences as strings.
-    """
-    sequences = []
-
-    with Path(filepath).open() as file:
-        current_sequence = []
-
-        for line in file:
-            line = line.strip()
-            if line.startswith(">"):  # Header line, indicates a new sequence
-                if current_sequence:  # Save the previous sequence
-                    sequences.append("".join(current_sequence))
-                    current_sequence = []
-            else:  # Sequence line
-                current_sequence.append(line)
-
-        if current_sequence:  # Add the last sequence in the file
-            sequences.append("".join(current_sequence))
-
-    return sequences
-
-
-class SequenceDataset(Dataset):
-    """Custom PyTorch Dataset for protein sequences."""
-
-    def __init__(self, sequences: list[str]):
-        self.sequences = sequences
-
-    def __len__(self):
-        return len(self.sequences)
-
-    def __getitem__(self, index):
-        return self.sequences[index]
-
-
 def get_model(model_name: str):
     """Dynamically imports and returns the specified model.
 
@@ -114,15 +74,12 @@ def run(args):
     if not output_path.exists():
         output_path.mkdir(parents=True, exist_ok=True)
 
-    sequences = load_fasta(input_path)
-    print(f"Loaded {len(sequences)} sequences from {input_path}")
-
     # Dynamically load the model
     pipeline = get_model(args.model_name)
     print(f"Pipeline loaded for model: {args.model_name}")
 
     # Create Dataset and DataLoader
-    dataset = SequenceDataset(sequences)
+    dataset = FastaDataset(input_path)
     dataloader = DataLoader(
         dataset,
         batch_size=args.batch_size,
