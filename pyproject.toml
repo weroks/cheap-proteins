@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=64.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cheap-proteins"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "biopython>=1.85",
+    "biotite>=1.2.0",
+    "datasets>=4.0.0",
+    "dm-tree>=0.1.9",
+    "einops>=0.8.1",
+    "evo",
+    "fair-esm",
+    "h5py>=3.14.0",
+    "hydra-core>=1.3",
+    "ihm>=2.7",
+    "ipykernel>=6.30.0",
+    "ipython>=8.37.0",
+    "jupyter>=1.1.1",
+    "lightning>=2.5.2",
+    "lmdb>=1.7.2",
+    "ml-collections>=1.1.0",
+    "modelcif>=1.4",
+    "ninja>=1.11.1.4",
+    "numba>=0.61.2",
+    "omegaconf>=2.3.0",
+    "openfold",
+    "pandas>=2.3.1",
+    "plotly>=6.2.0",
+    "py3dmol>=2.5.1",
+    "pyarrow>=21.0.0",
+    "safetensors>=0.5.3",
+    "scikit-learn>=1.7.1",
+    "scipy>=1.15.3",
+    "seaborn>=0.13.2",
+    "torch>=2.7.1",
+    "torchvision>=0.22.1",
+    "tqdm>=4.67.1",
+    "transformers>=4.53.3",
+    "wandb>=0.21.0",
+]
+
+[tool.uv.sources]
+fair-esm = { git = "https://github.com/facebookresearch/esm.git", rev = "d7b3331f41442ed4ffde70cb95bdd48cabcec2e9" }
+evo = { git = "https://github.com/amyxlu/evo.git" }
+openfold = { git = "https://github.com/amyxlu/openfold.git" }
