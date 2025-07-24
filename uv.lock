@@ -583,7 +583,6 @@ dependencies = [
     { name = "ninja" },
     { name = "numba" },
     { name = "omegaconf" },
-    { name = "openfold" },
     { name = "pandas" },
     { name = "plotly" },
     { name = "py3dmol" },
@@ -622,7 +621,6 @@ requires-dist = [
     { name = "ninja", specifier = ">=1.11.1.4" },
     { name = "numba", specifier = ">=0.61.2" },
     { name = "omegaconf", specifier = ">=2.3.0" },
-    { name = "openfold", git = "https://github.com/amyxlu/openfold.git" },
     { name = "pandas", specifier = ">=2.3.1" },
     { name = "plotly", specifier = ">=6.2.0" },
     { name = "py3dmol", specifier = ">=2.5.1" },
@@ -2573,11 +2571,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/09/48/6388f1bb9da707110
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl", hash = "sha256:7b4df175cdb08ba400f45cae3bdcae7ba8365db4d165fc65fd04b050ab63b46b", size = 79500, upload-time = "2022-12-08T20:59:19.686Z" },
 ]
-
-[[package]]
-name = "openfold"
-version = "2.0.0"
-source = { git = "https://github.com/amyxlu/openfold.git#25b2a47eb185a05980e52fc72343a4565be02fa4" }
 
 [[package]]
 name = "overrides"
